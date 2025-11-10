@@ -6,70 +6,44 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.wear.compose.materialcore.screenHeightPx
 import androidx.window.layout.WindowMetricsCalculator
 import tw.edu.pu.csim.tcyang.race.ui.theme.RaceTheme
-
-private val MainActivity.screenWidthPx: Float
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         //強迫橫式螢幕
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
 
-        // 隱藏狀態列：獲取 WindowInsetsController，再隱藏statusBars
+        // 隱藏狀態列
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
-        //隱藏下方巡覽列
         windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
+
         // 確保內容延伸到至邊緣
-        WindowCompat.setDecorFitsSystemWindows(
-            window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // 步驟 1: 獲取 WindowMetricsCalculator 實例
-        val windowMetricsCalculator =
-            WindowMetricsCalculator.getOrCreate()
-
-        // 步驟 2: 計算當前視窗的 WindowMetrics
-        val currentWindowMetrics=
-            windowMetricsCalculator.computeCurrentWindowMetrics(this)
-
-        // 步驟 3: 從 bounds 獲取像素尺寸
+        // 獲取螢幕尺寸
+        val windowMetricsCalculator = WindowMetricsCalculator.getOrCreate()
+        val currentWindowMetrics = windowMetricsCalculator.computeCurrentWindowMetrics(this)
         val bounds = currentWindowMetrics.bounds
+        val screenWidthPx = bounds.width().toFloat()
+        val screenHeightPx = bounds.height().toFloat()
+
         val gameViewModel: GameViewModel by viewModels()
-        gameViewModel.SetGameSize(screenWidthPx,screenHeightPx)
+        gameViewModel.SetGameSize(w = screenWidthPx, h = screenHeightPx)
+
         setContent {
             RaceTheme {
-                GameScreen(message = "橫式螢幕，隱藏狀態列，銀幕寬度與高度:"+
-                "$screenWidthPx * $screenHeightPx")
+                GameScreen(
+                    message = "橫式螢幕，隱藏狀態列\n學生: 陳若綺\n分數: ",
+                    gameViewModel = gameViewModel
+                )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RaceTheme {
-        Greeting("Android")
     }
 }

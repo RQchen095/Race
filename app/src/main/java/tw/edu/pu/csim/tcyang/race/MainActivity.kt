@@ -12,19 +12,22 @@ import androidx.window.layout.WindowMetricsCalculator
 import tw.edu.pu.csim.tcyang.race.ui.theme.RaceTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val gameViewModel: GameViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        //強迫橫式螢幕
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+        // 強迫橫式螢幕
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
-        // 隱藏狀態列
+        // 隱藏狀態列和導航列
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
         windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
 
-        // 確保內容延伸到至邊緣
+        // 確保內容延伸到邊緣
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // 獲取螢幕尺寸
@@ -34,13 +37,13 @@ class MainActivity : ComponentActivity() {
         val screenWidthPx = bounds.width().toFloat()
         val screenHeightPx = bounds.height().toFloat()
 
-        val gameViewModel: GameViewModel by viewModels()
+        // 設定遊戲畫面大小
         gameViewModel.SetGameSize(w = screenWidthPx, h = screenHeightPx)
 
         setContent {
             RaceTheme {
                 GameScreen(
-                    message = "橫式螢幕，隱藏狀態列\n學生: 陳若綺\n分數: ",
+                    message = "分數: ",
                     gameViewModel = gameViewModel
                 )
             }
